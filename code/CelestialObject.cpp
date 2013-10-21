@@ -4,7 +4,7 @@
 #include "CelestialObject.hpp"
 
 CelestialObject::CelestialObject(double mass) {
-	double m = mass;	
+	m = mass;	
 }
 
 double CelestialObject::getMass() {
