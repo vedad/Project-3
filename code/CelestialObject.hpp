@@ -1,16 +1,15 @@
-#include <iostream>
+#include <armadillo>
 
 using namespace std;
+using namespace arma;
 
 class CelestialObject {
 
 	public:
-		CelestialObject(double);
-		double getMass();
-		double m;
+		CelestialObject(string, vec, vec, double);
+		string name;
+		vec velocity, position;
+		double mass;
 
 };
-
-	
-
 

@@ -1,13 +1,18 @@
 #include <iostream>
-#include <cmath>
 #include <armadillo>
 #include "CelestialObject.hpp"
 
-CelestialObject::CelestialObject(double mass) {
-	m = mass;	
+using namespace std;
+using namespace arma;
+
+CelestialObject :: CelestialObject(string name, vec position, vec velocity, double mass) {
+
+	this->mass = mass;
+	this->position = position;
+	this->velocity = velocity;
+	this->name = name;
+
 }
 
-double CelestialObject::getMass() {
 
-	return m;
-}
+
