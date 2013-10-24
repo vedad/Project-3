@@ -11,5 +11,19 @@ class CelestialObject {
 		vec velocity, position;
 		double mass;
 
+		// Set-functions
+		setVelocity(vec);
+		setPosition(vec);
+		
+		// Get-functions
+		getDistanceTo(CelestialObject);
+		getForce(CelestialObject);
+		getAcceleration(CelestialObject);
+		getVelocity();
+		getPosition();
+		getName();
+		getMass();
+
+		
 };
 
