@@ -14,5 +14,9 @@ CelestialObject :: CelestialObject(string name, vec position, vec velocity, doub
 
 }
 
+void CelestialObject :: setForce() {
+
+	
+}
 
 

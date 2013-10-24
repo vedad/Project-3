@@ -9,7 +9,7 @@ int main(int argc, char* argv[]) {
 //	cout << Earth.getMass() << endl;
 
 	SolarSystem mySystem = SolarSystem("../data/sunEarthSystem.dat");
-	cout << mySystem.objects[1].velocity << endl;
+
 	return 0;
 }
 
