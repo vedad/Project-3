@@ -37,7 +37,7 @@ vec CelestialObject :: getDistanceTo(CelestialObject other) {
 vec CelestialObject :: getForce(CelestialObject other) {
 	
 	vec r = this->getDistanceTo(other);
-	vec force = - (this->getMass * other.getMass / pow(norm(r,2),3)) * r;
+	vec force = (this->getMass() * other.getMass() / pow(norm(r,2),3)) * r;
 	return force;
 		
 }
@@ -50,8 +50,8 @@ vec CelestialObject :: getAcceleration(CelestialObject other) {
 
 }
 
-vec CelestialObject :: getVelocity() { return velocity }
-vec CelestialObject :: getPosition() { return position }
-double CelestialObject :: getMass() { return mass }
-string CelestialObject :: getName() { return name }
+vec CelestialObject :: getVelocity() { return velocity; }
+vec CelestialObject :: getPosition() { return position; }
+double CelestialObject :: getMass() { return mass; }
+string CelestialObject :: getName() { return name; }
 
