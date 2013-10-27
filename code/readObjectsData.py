@@ -78,8 +78,8 @@ if __name__ == '__main__':
     fig = plt.figure()
     fig.suptitle('The solar system')
     ax = fig.add_subplot(111)
-    ax.set_xlabel('$x$')
-    ax.set_ylabel('$y$')
+    ax.set_xlabel('$x \\ [AU]$')
+    ax.set_ylabel('$y \\ [AU]$')
     ax.grid('on')
 
     for datafile in files:
