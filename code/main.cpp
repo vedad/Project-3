@@ -12,7 +12,7 @@ int main(int argc, char* argv[]) {
 	clock_t start, finish;	
 	start = clock();
 	SolarSystem mySystem = SolarSystem("../data/sunEarthSystem.dat");
-	mySystem.systemSimulation(1e-4, 20);
+	mySystem.systemSimulation(1e-4, 3);
 	finish = clock();
 	cout << "Computation time: " << double(finish - start)/CLOCKS_PER_SEC << " seconds" << endl;
 

@@ -15,7 +15,7 @@ const double DIMENSION = 2;
 SolarSystem :: SolarSystem(string systemfile) {
 
 	fstream inFile;
-	inFile.open("../data/solarSystem.dat", ios::in);
+	inFile.open("../data/sunEarthSystem.dat", ios::in);
 	
 	double x0, y0, v0x, v0y, m;
 	string name;
@@ -66,9 +66,10 @@ void SolarSystem :: advance(double dt) {
 	
 	// Get acceleration, velocity and position in the first step, K1.
 	for (int i=0; i < getNoOfObjects(); i++) {
-		accK1.col(i) = getSystemAcceleration(objects[i]);
 		velK1.col(i) = objects[i].getVelocity();
 		posK1.col(i) = objects[i].getPosition();
+		accK1.col(i) = getSystemAcceleration(objects[i]);
+
 
 	}
 	
@@ -78,6 +79,7 @@ void SolarSystem :: advance(double dt) {
 
 		velK2.col(i) = velK1.col(i) + dt2 * accK1.col(i);
 		posK2.col(i) = posK1.col(i) + dt2 * velK1.col(i);
+		objects[i].setVelocity(velK2.col(i));
 		objects[i].setPosition(posK2.col(i));
 		accK2.col(i) = getSystemAcceleration(objects[i]);
 
@@ -89,6 +91,7 @@ void SolarSystem :: advance(double dt) {
 
 		velK3.col(i) = velK2.col(i) + dt2 * accK2.col(i);
 		posK3.col(i) = posK2.col(i) + dt2 * velK2.col(i);
+		objects[i].setVelocity(velK3.col(i));
 		objects[i].setPosition(posK3.col(i));
 		accK3.col(i) = getSystemAcceleration(objects[i]);
 
@@ -100,6 +103,7 @@ void SolarSystem :: advance(double dt) {
 
 		velK4.col(i) = velK3.col(i) + dt * accK3.col(i);
 		posK4.col(i) = posK3.col(i) + dt * velK3.col(i);
+		objects[i].setVelocity(velK4.col(i));
 		objects[i].setPosition(posK4.col(i));
 		accK4.col(i) = getSystemAcceleration(objects[i]);
 
