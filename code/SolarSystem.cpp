@@ -27,7 +27,6 @@ SolarSystem :: SolarSystem(string systemfile) {
 		CelestialObject newObject = CelestialObject(name, position, velocity, m);
 		addObject(newObject);
 		cout << "Added: " << newObject.getName() << endl;
-
 	}
 }
 
@@ -40,14 +39,6 @@ void SolarSystem :: addObject(CelestialObject newObject) {
 
 void SolarSystem :: advance(double dt) {
 
-	/* Need each of the K's to be a matrix, where the rows represent each
-	 * object, and the first and second columns giving the contribution in x and
-	 * y direction. */	
-	mat accK1 = zeros<mat>(DIMENSION, getNoOfObjects());
-	mat accK2 = zeros<mat>(DIMENSION, getNoOfObjects());
-	mat accK3 = zeros<mat>(DIMENSION, getNoOfObjects());
-	mat accK4 = zeros<mat>(DIMENSION, getNoOfObjects());
-
 	mat velK1 = zeros<mat>(DIMENSION, getNoOfObjects());
 	mat velK2 = zeros<mat>(DIMENSION, getNoOfObjects());
 	mat velK3 = zeros<mat>(DIMENSION, getNoOfObjects());
@@ -58,71 +49,53 @@ void SolarSystem :: advance(double dt) {
 	mat posK3 = zeros<mat>(DIMENSION, getNoOfObjects());
 	mat posK4 = zeros<mat>(DIMENSION, getNoOfObjects());
 
+	mat thisVelocity = zeros<mat>(DIMENSION, getNoOfObjects());
+	mat thisPosition = zeros<mat>(DIMENSION, getNoOfObjects());
+
 	mat newVelocity = zeros<mat>(DIMENSION, getNoOfObjects());
 	mat newPosition = zeros<mat>(DIMENSION, getNoOfObjects());
 
-	double dt2 = dt * 0.5;
+	double dt2 = dt / 2.0;
 	double dt6 = dt / 6.0;
-	
-	// Get acceleration, velocity and position in the first step, K1.
+		
 	for (int i=0; i < getNoOfObjects(); i++) {
-		velK1.col(i) = objects[i].getVelocity();
-		posK1.col(i) = objects[i].getPosition();
-		accK1.col(i) = getSystemAcceleration(objects[i]);
+		thisPosition.col(i) = objects[i].getPosition();
+		thisVelocity.col(i) = objects[i].getVelocity();
 
-
+		velK1.col(i) = getSystemAcceleration(objects[i]);
+		posK1.col(i) = objects[i].getVelocity();			
 	}
 	
-	
-	// Calculate acceleration, velocity and position in the second step, K2.
+	// Move system by half the step length and calculate K2.
 	for (int i=0; i < getNoOfObjects(); i++) {
-
-		velK2.col(i) = velK1.col(i) + dt2 * accK1.col(i);
+		objects[i].setPosition(thisPosition.col(i) + dt2 * posK1.col(i));
+		velK2.col(i) = getSystemAcceleration(objects[i]);
 		posK2.col(i) = posK1.col(i) + dt2 * velK1.col(i);
-		objects[i].setVelocity(velK2.col(i));
-		objects[i].setPosition(posK2.col(i));
-		accK2.col(i) = getSystemAcceleration(objects[i]);
-
 	}
 	
-
-	// Calculate acceleration, velocity and position in the third step, K3.
+	// Move system by half a step length and calculate K3.
 	for (int i=0; i < getNoOfObjects(); i++) {
-
-
-		velK3.col(i) = velK2.col(i) + dt2 * accK2.col(i);
-		posK3.col(i) = posK2.col(i) + dt2 * velK2.col(i);
-		objects[i].setVelocity(velK3.col(i));
-		objects[i].setPosition(posK3.col(i));
-		accK3.col(i) = getSystemAcceleration(objects[i]);
-
+		objects[i].setPosition(thisPosition.col(i) + dt2 * posK2.col(i));
+		velK3.col(i) = getSystemAcceleration(objects[i]);
+		posK3.col(i) = posK1.col(i) + dt2 * velK2.col(i);
 	}
-
 	
-	// Calculate acceleration, velocity and position in the fourth step, K4.
+	// Move system by half a step length and calculate K4.
 	for (int i=0; i < getNoOfObjects(); i++) {
-
-		velK4.col(i) = velK3.col(i) + dt * accK3.col(i);
-		posK4.col(i) = posK3.col(i) + dt * velK3.col(i);
-		objects[i].setVelocity(velK4.col(i));
-		objects[i].setPosition(posK4.col(i));
-		accK4.col(i) = getSystemAcceleration(objects[i]);
-
+		objects[i].setPosition(thisPosition.col(i) + dt*posK3.col(i));
+		velK4.col(i) = getSystemAcceleration(objects[i]);
+		posK4.col(i) = posK1.col(i) + dt * velK3.col(i);
 	}
-
 	
-	// Calculate the new acceleration, velocity and position after a time step
-	// dt.
+	// Calculate the new velocity and position after a time step dt.
 	for (int i=0; i < getNoOfObjects(); i++) {
+		newVelocity.col(i) = thisVelocity.col(i) + dt6 * (velK1.col(i) + 2*velK2.col(i) + 2*velK3.col(i) + velK4.col(i));	
 
-		newVelocity.col(i) = velK1.col(i) + dt6 * (accK1.col(i) + 2*accK2.col(i) + 2*accK3.col(i) + accK4.col(i));	
-
-		newPosition.col(i) = posK1.col(i) + dt6 * (velK1.col(i) + 2*velK2.col(i) + 2*velK3.col(i) + velK4.col(i));
+		newPosition.col(i) = thisPosition.col(i) + dt6 * (posK1.col(i) + 2*posK2.col(i) + 2*posK3.col(i) + posK4.col(i));
 
 		objects[i].setVelocity(newVelocity.col(i));
 		objects[i].setPosition(newPosition.col(i));
 	}
-
 
 }
 
