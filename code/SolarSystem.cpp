@@ -89,6 +89,7 @@ void SolarSystem :: advance(double dt) {
 	// Calculate acceleration, velocity and position in the third step, K3.
 	for (int i=0; i < getNoOfObjects(); i++) {
 
+
 		velK3.col(i) = velK2.col(i) + dt2 * accK2.col(i);
 		posK3.col(i) = posK2.col(i) + dt2 * velK2.col(i);
 		objects[i].setVelocity(velK3.col(i));
