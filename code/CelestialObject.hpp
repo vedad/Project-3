@@ -23,7 +23,8 @@ class CelestialObject {
 		vec getPosition();
 		string getName();
 		double getMass();
+		double getKineticEnergy(CelestialObject);
+		double getPotentialEnergy(CelestialObject);
 
-		
 };
 

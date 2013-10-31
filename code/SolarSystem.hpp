@@ -12,7 +12,10 @@ class SolarSystem {
 		vec getSystemAcceleration(CelestialObject);
 		void addObject(CelestialObject);
 		void advance(double);
-		void systemSimulation(double, double);
+		void systemSimulation(double, double, bool, bool);
+		double getSystemPotentialEnergy(CelestialObject);
+		double getTotalEnergy(CelestialObject);
+		double getAngularMomentum(CelestialObject);
 		int getNoOfObjects();
 	
 		vector<CelestialObject> objects;

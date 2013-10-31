@@ -6,13 +6,10 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 	
-//	CelestialObject Earth = CelestialObject(100);
-//	cout << Earth.getMass() << endl;
-	
 	clock_t start, finish;	
 	start = clock();
-	SolarSystem mySystem = SolarSystem("../data/sunEarthSystem.dat");
-	mySystem.systemSimulation(1e-4, 3);
+	SolarSystem mySystem = SolarSystem("../data/parameters/sunEarthSystem.dat");
+	mySystem.systemSimulation(1e-2, 100, true, false);
 	finish = clock();
 	cout << "Computation time: " << double(finish - start)/CLOCKS_PER_SEC << " seconds" << endl;
 

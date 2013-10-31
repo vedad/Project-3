@@ -15,7 +15,7 @@ const double DIMENSION = 2;
 SolarSystem :: SolarSystem(string systemfile) {
 
 	fstream inFile;
-	inFile.open("../data/sunEarthSystem.dat", ios::in);
+	inFile.open("../data/parameters/sunEarthSystem.dat", ios::in);
 	
 	double x0, y0, v0x, v0y, m;
 	string name;
@@ -66,31 +66,41 @@ void SolarSystem :: advance(double dt) {
 		posK1.col(i) = objects[i].getVelocity();			
 	}
 	
-	// Move system by half the step length and calculate K2.
+	// Move entire system by half the step length.
 	for (int i=0; i < getNoOfObjects(); i++) {
 		objects[i].setPosition(thisPosition.col(i) + dt2 * posK1.col(i));
+	}
+	
+	// Calculate K2.
+	for (int i=0; i < getNoOfObjects(); i++) {
 		velK2.col(i) = getSystemAcceleration(objects[i]);
 		posK2.col(i) = posK1.col(i) + dt2 * velK1.col(i);
 	}
 	
-	// Move system by half a step length and calculate K3.
+	// Move system by half a step length.
 	for (int i=0; i < getNoOfObjects(); i++) {
 		objects[i].setPosition(thisPosition.col(i) + dt2 * posK2.col(i));
+	}
+	
+	// Calculate K3.
+	for (int i=0; i < getNoOfObjects(); i++) {
 		velK3.col(i) = getSystemAcceleration(objects[i]);
 		posK3.col(i) = posK1.col(i) + dt2 * velK2.col(i);
 	}
 	
-	// Move system by half a step length and calculate K4.
+	// Move system by the step length.
 	for (int i=0; i < getNoOfObjects(); i++) {
 		objects[i].setPosition(thisPosition.col(i) + dt*posK3.col(i));
+	}
+	
+	// Calculate K4.
+	for (int i=0; i < getNoOfObjects(); i++) {
 		velK4.col(i) = getSystemAcceleration(objects[i]);
 		posK4.col(i) = posK1.col(i) + dt * velK3.col(i);
 	}
-	
 	// Calculate the new velocity and position after a time step dt.
 	for (int i=0; i < getNoOfObjects(); i++) {
 		newVelocity.col(i) = thisVelocity.col(i) + dt6 * (velK1.col(i) + 2*velK2.col(i) + 2*velK3.col(i) + velK4.col(i));	
-
 		newPosition.col(i) = thisPosition.col(i) + dt6 * (posK1.col(i) + 2*posK2.col(i) + 2*posK3.col(i) + posK4.col(i));
 
 		objects[i].setVelocity(newVelocity.col(i));
@@ -99,21 +109,50 @@ void SolarSystem :: advance(double dt) {
 
 }
 
-void SolarSystem :: systemSimulation(double dt, double tMax) {
+void SolarSystem :: systemSimulation(double dt, double tMax, bool energy, bool angMom) {
 	
-//	fstream outFile;
-//	outFile.open("../data/simulationData.dat", ios::out);
-	ofstream *newFile;
+	ofstream *newEnergyFile;
+	vector<ofstream*> objectEnergyList;
+	ofstream *newAngMomFile;
+	vector<ofstream*> objectAngMomList;
+
+	if (energy) {
+		
+		for (int i=0; i < getNoOfObjects(); i++) {
+			
+			ostringstream energyFile;
+			energyFile << "../data/conservations/energy/" << objects[i].getName() << ".dat";
+			newEnergyFile = new ofstream(energyFile.str().c_str());
+			*newEnergyFile << "Energy for: " << objects[i].getName() << endl;
+			objectEnergyList.push_back(newEnergyFile);
+
+		}
+	}
+
+	if (angMom) {
+
+		for (int i=0; i < getNoOfObjects(); i++) {
+			
+			ostringstream angMomFile;
+			angMomFile << "../data/conservations/angularmomentum/" << objects[i].getName() << ".dat";
+			newAngMomFile = new ofstream(angMomFile.str().c_str());
+			*newAngMomFile << "Angular momentum for: " << objects[i].getName() << endl;
+			objectAngMomList.push_back(newAngMomFile);
+
+		}
+	}
+
+	ofstream *newPositionFile;
 	vector<ofstream*> objectFileList;
 
 	for (int i=0; i < getNoOfObjects(); i++) {
-
 				
 		ostringstream objectFile;
 		objectFile << "../data/objects/" << objects[i].getName() << ".dat";
-		newFile = new ofstream(objectFile.str().c_str());
-		*newFile << "Positions for: " << objects[i].getName() << endl;
-		objectFileList.push_back(newFile);
+		newPositionFile = new ofstream(objectFile.str().c_str());
+		*newPositionFile << "Positions for: " << objects[i].getName() << endl;
+		objectFileList.push_back(newPositionFile);
+				
 	}
 
 	cout << "Advancing system..." << endl;
@@ -123,13 +162,21 @@ void SolarSystem :: systemSimulation(double dt, double tMax) {
 		this->advance(dt);
 		
 		for (int i=0; i < getNoOfObjects(); i++) {
-			
 			*objectFileList[i] << objects[i].getPosition()[0] << " " << objects[i].getPosition()[1] << endl;
+
+			if (energy) {
+				*objectEnergyList[i] << t << " " << getTotalEnergy(objects[i]) << endl;
+			}
+			if (angMom) {
+				*objectAngMomList[i] << t << " " << getAngularMomentum(objects[i]) << endl;
+			}
 		}
 	}
 
 	for (int i = 0; i < getNoOfObjects(); i++) {
 		objectFileList[i]->close();
+		if (energy) { objectEnergyList[i]->close(); }
+		if (angMom) { objectAngMomList[i]->close(); }
 	}
 //	outFile.close();
 }
@@ -154,7 +201,7 @@ vec SolarSystem :: getSystemForce(CelestialObject object) {
 	return systemForce;
 }
 
-// Calculating the acceleration of an object
+// Calculating the acceleration of an object.
 vec SolarSystem :: getSystemAcceleration(CelestialObject object) {
 	
 	vec systemForce = getSystemForce(object);
@@ -162,6 +209,60 @@ vec SolarSystem :: getSystemAcceleration(CelestialObject object) {
 
 	return systemAcceleration;
 }
+
+double SolarSystem :: getAngularMomentum(CelestialObject object) {
+
+//	c v = object.getVelocity();
+//	doubler = object.getDistanceTo(Sun);
+//	double angularVelocity = norm(object.getVelocity(),2) / norm(object.getDistanceTo(Sun),2);
+	vec v = object.getVelocity();
+	vec r = object.getDistanceTo(objects[0]);
+	double m = object.getMass();
+	double detRV = r(0) * v(1) - r(1) * v(0);
+	double angularMomentum = m * detRV;
+
+	return angularMomentum;
+
+}
+
+// Calculating the total energy of an object.
+double SolarSystem :: getTotalEnergy(CelestialObject object) {
+
+	double totalEnergy = 0.0; //zeros<vec>(getNoOfObjects());
+
+	double kineticEnergy = object.getKineticEnergy(object);
+	double potentialEnergy = getSystemPotentialEnergy(object);
+
+	totalEnergy = kineticEnergy + potentialEnergy;
+	return totalEnergy;
+}
+/* 
+vec SolarSystem :: getSystemKineticEnergy(CelestialObject object) {
+	
+	vec kineticEnergy = zeros<vec>(getNoOfObjects());
+	for (int i=0; i < getNoOfObjects(); i++) {
+		kineticEnergy(i) = getKineticEnergy(objects[i]);	
+	}
+	return kineticEnergy;
+}
+*/
+
+double SolarSystem :: getSystemPotentialEnergy(CelestialObject object) {
+
+	double potentialEnergy = 0.0; //zeros<vec>(getNoOfObjects());
+
+	for (int i=0; i < getNoOfObjects(); i++) {
+	
+		if (object.getName() == objects[i].getName()) { continue; }
+
+		else {
+			vec r = object.getDistanceTo(objects[i]);
+			potentialEnergy += object.getPotentialEnergy(objects[i]);
+		}
+	}
+	return potentialEnergy;
+}
+
 
 int SolarSystem :: getNoOfObjects() { return objects.size(); }
 
