@@ -76,10 +76,11 @@ if __name__ == '__main__':
     files = os.listdir(OBJECTS_PATH)
 
     fig = plt.figure()
-    fig.suptitle('The solar system')
+    fig.suptitle('Sun-Earth system')
     ax = fig.add_subplot(111)
-    ax.set_xlabel('$x \\ [AU]$')
-    ax.set_ylabel('$y \\ [AU]$')
+    ax.set_title('$T = 5000$, $dt=0.01$', fontsize='14')
+    ax.set_xlabel('$x \\ \mathrm{[AU]}$', fontsize='14')
+    ax.set_ylabel('$y \\ \mathrm{[AU]}$', fontsize='14')
     ax.grid('on')
 
     for datafile in files:
