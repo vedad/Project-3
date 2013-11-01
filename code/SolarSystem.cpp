@@ -15,7 +15,7 @@ const double DIMENSION = 2;
 SolarSystem :: SolarSystem(string systemfile) {
 
 	fstream inFile;
-	inFile.open("../data/parameters/sunEarthSystem.dat", ios::in);
+	inFile.open("../data/parameters/sunEarthJupiter.dat", ios::in);
 	
 	double x0, y0, v0x, v0y, m;
 	string name;
@@ -123,7 +123,7 @@ void SolarSystem :: systemSimulation(double dt, double tMax, bool energy, bool a
 			ostringstream energyFile;
 			energyFile << "../data/conservations/energy/" << objects[i].getName() << ".dat";
 			newEnergyFile = new ofstream(energyFile.str().c_str());
-			*newEnergyFile << "Energy for: " << objects[i].getName() << endl;
+//			*newEnergyFile << "Energy for: " << objects[i].getName() << endl;
 			objectEnergyList.push_back(newEnergyFile);
 
 		}
@@ -165,7 +165,7 @@ void SolarSystem :: systemSimulation(double dt, double tMax, bool energy, bool a
 			*objectFileList[i] << objects[i].getPosition()[0] << " " << objects[i].getPosition()[1] << endl;
 
 			if (energy) {
-				*objectEnergyList[i] << t << " " << getTotalEnergy(objects[i]) << endl;
+				*objectEnergyList[i] << t << " " << objects[i].getKineticEnergy(objects[i]) << " " << getSystemPotentialEnergy(objects[i]) << " " << getTotalEnergy(objects[i]) << endl;
 			}
 			if (angMom) {
 				*objectAngMomList[i] << t << " " << getAngularMomentum(objects[i]) << endl;

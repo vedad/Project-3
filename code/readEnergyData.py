@@ -37,6 +37,7 @@ class ObjectData(object):
         inData = open(datafile, 'r')
         x = []
         y = []
+        z = []
 
         # First read till end of header
         inData.readline()
@@ -45,8 +46,9 @@ class ObjectData(object):
             columns = line.split()
             x.append(columns[0])
             y.append(columns[1])
+            z.append(columns[2])
 
-        self.x,self.y = np.asarray(x), np.asarray(y)
+        self.x,self.y,self.z = np.asarray(x), np.asarray(y), np.asarray(z)
         inData.close()
 
     def _findName(self, datafile):
@@ -80,7 +82,7 @@ if __name__ == '__main__':
     ax = fig.add_subplot(111)
     ax.set_title('$T = 100$, $dt=0.01$', fontsize='14')
     ax.set_xlabel('$t \\ \mathrm{[year]}$', fontsize='14')
-    ax.set_ylabel('$\mathrm{Energy} \\ \mathrm{[GM_{sun} \\ AU^2 year^{-2}]}$', fontsize='14')
+    ax.set_ylabel('$\mathrm{Energy} \\ \mathrm{[GM_{Sun} \\ AU^2 year^{-2}]}$', fontsize='14')
     ax.grid('on')
 
     for datafile in files:

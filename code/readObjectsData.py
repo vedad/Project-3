@@ -78,7 +78,7 @@ if __name__ == '__main__':
     fig = plt.figure()
     fig.suptitle('Sun-Earth system')
     ax = fig.add_subplot(111)
-    ax.set_title('$T = 5000$, $dt=0.01$', fontsize='14')
+    ax.set_title('$T = 100$, $dt=0.01$', fontsize='14')
     ax.set_xlabel('$x \\ \mathrm{[AU]}$', fontsize='14')
     ax.set_ylabel('$y \\ \mathrm{[AU]}$', fontsize='14')
     ax.grid('on')
